@@ -1,7 +1,12 @@
+import json
+import os
 from flask_restful import Resource, reqparse
 from objects import getJSONfile
-import pandas as pd
 from datetime import datetime
+import pandas as pd
+
+root = os.path.dirname(__file__)
+filename = os.path.join(root, "objectsDatabase.json")
 
 
 class Object(Resource):
@@ -13,15 +18,14 @@ class Object(Resource):
         if name in list(objects["name"]):
             findName = objects["name"] == name
             objects = objects.loc[findName]
-            print(objects)
-            objects = objects.to_dict()
+            objects = objects.to_dict(orient="records")
             return {"objects": objects}, 200
-            # return {"object": objects[name]}, 200
         else:
             return {"message": f"Object {name} not found"}, 409
 
     def post(self, name=None):
         objects = getJSONfile()
+        print(objects)
         if name in list(objects["name"]):
             return {"message": f"'{name}' already exists."}, 409
         else:
@@ -33,8 +37,10 @@ class Object(Resource):
                 }
             )
             objects = objects.append(new_object, ignore_index=True)
-            objects.to_json("newObjectsDatabase.json")
-            return {"objects": objects.to_dict()}, 201
+            objects = {"objects": objects.to_dict(orient="records")}
+            with open(filename, "w") as outfile:
+                json.dump(objects, outfile)
+            return objects, 201
 
     def delete(self, name=None):
 
@@ -42,7 +48,9 @@ class Object(Resource):
 
         if name in list(objects["name"]):
             objects = objects[objects["name"] != name]
-            objects.to_json("newObjectsDatabase.json")
-            return {"objects": objects.to_dict()}, 204
+            objects = {"objects": objects.to_dict(orient="records")}
+            with open(filename, "w") as outfile:
+                json.dump(objects, outfile)
+            return objects, 204
         else:
             return {"message": f"'{name}' object not found."}, 404

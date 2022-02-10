@@ -7,7 +7,7 @@ import os
 class Objects(Resource):
     def get(self):
         objects = getJSONfile()
-        objects = objects.to_dict()
+        objects = objects.to_dict(orient="records")
         return {"objects": objects}, 200
 
 
