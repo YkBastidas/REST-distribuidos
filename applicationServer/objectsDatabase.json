@@ -1,0 +1,19 @@
+{
+    "objects": [
+        {
+            "creation_date": "10/02/2022",
+            "name": "Test Object A",
+            "action": "Undefined"
+        },
+        {
+            "creation_date": "10/02/2022",
+            "name": "Test Object B",
+            "action": "Undefined"
+        },
+        {
+            "creation_date": "10/02/2022",
+            "name": "Test Object C",
+            "action": "Undefined"
+        }
+    ]
+}
