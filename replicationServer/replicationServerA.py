@@ -1,5 +1,9 @@
 from random import choice
+from encodings import utf_8
+import json
 import socket
+
+from sqlalchemy import false, true
 
 HOST = "127.0.0.1"
 PORT = 65432
@@ -13,6 +17,7 @@ class ReplicationServer:
             conn, addr = s.accept()
             with conn:
                 print("Connected by", addr)
+                jsonReceiving = false
                 while True:
                     # data = conn.recv(1024)
                     # print("Received", repr(data))
@@ -45,5 +50,25 @@ class ReplicationServer:
                         conn.sendall(b"SUCCEED REPLICATION")
                     else:
                         conn.sendall(b"FAILED REPLICATION")
+                    data = conn.recv(1024)
+                    print("Received", data)
+                    if(data == b'VOTE_REQUEST'):
+                        jsonReceiving = true
+
+                        with open('objectsDatabase.json', 'w') as json_file:
+                            json.dump(data.decode("UTF-8"), json_file)
+                        conn.sendall(data)
+                        
+                    else:                        
+                        if(jsonReceiving == true):
+                            print("Receiving json")                                                                                                                                                
+
+                            with open('objectsDatabase.json', 'w') as json_file:
+                                json.dump(data.decode("UTF-8"), json_file)
+                                jsonReceiving = true
+                        else:
+                            conn.sendall(data)
+                    if not data:
+                        break                    
 
     runServer()
