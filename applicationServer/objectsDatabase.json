@@ -1,28 +1,8 @@
 {
     "objects": [
         {
-            "creation_date": "10/02/2022 20:19:40",
+            "creation_date": "11/02/2022 03:59:21",
             "name": "New Object A",
-            "action": "COMMIT"
-        },
-        {
-            "creation_date": "10/02/2022 20:20:01",
-            "name": "New Object B",
-            "action": "ABORT"
-        },
-        {
-            "creation_date": "10/02/2022 20:22:19",
-            "name": "New Object C",
-            "action": "COMMIT"
-        },
-        {
-            "creation_date": "10/02/2022 20:22:33",
-            "name": "New Object D",
-            "action": "RANDOM"
-        },
-        {
-            "creation_date": "10/02/2022 20:22:44",
-            "name": "New Object E",
             "action": "COMMIT"
         }
     ]

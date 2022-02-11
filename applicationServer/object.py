@@ -26,7 +26,6 @@ class Object(Resource):
     def post(self, name=None):
         objects = getJSONfile()
         options = ["COMMIT", "ABORT", "RANDOM"]
-        print(objects)
         if name in list(objects["name"]):
             return {"message": f"'{name}' already exists."}, 409
         else:
@@ -44,6 +43,9 @@ class Object(Resource):
                     "action": action,
                 }
             )
+            if objects.loc[0]["name"] == "Placeholder Object":
+                self.delete("Placeholder Object")
+                objects = getJSONfile()
             objects = objects.append(new_object, ignore_index=True)
             objects = {"objects": objects.to_dict(orient="records")}
             with open(filename, "w") as outfile:
