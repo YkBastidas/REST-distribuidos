@@ -1,7 +1,7 @@
 import os
 import socket
 
-from tqdm import tqdm
+#from tqdm import tqdm
 
 HOST_REPLICATION_A = "172.26.208.232"
 PORT_REPLICATION_A = 65432
