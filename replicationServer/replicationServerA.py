@@ -3,7 +3,7 @@ from random import choice
 from tqdm import tqdm
 import socket
 
-HOST = "127.0.0.1"
+HOST = "172.26.77.116"
 PORT = 65432
 
 

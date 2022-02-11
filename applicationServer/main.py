@@ -13,4 +13,4 @@ api.add_resource(Restore, "/api/restore/<action>")
 api.add_resource(Object, "/api/objects/<name>")
 
 if __name__ == "__main__":
-    app.run()
+    app.run("172.26.77.116",5000)
