@@ -1,9 +1,8 @@
 import os
 from random import choice
-from tqdm import tqdm
 import socket
 
-HOST = "127.0.0.1"
+HOST = "172.26.208.232"
 PORT = 65432
 
 
