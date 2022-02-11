@@ -1,3 +1,4 @@
+import json
 from random import choice
 import socket
 
@@ -42,6 +43,11 @@ class ReplicationServer:
                     last = conn.recv(1024)  # RECEIVE GLOBAL
                     print("Received", repr(last))
                     if last.decode("utf-8") == "GLOBAL_COMMIT":
+                        
+                        jsonReceived = conn.makefile()
+                        
+                        with open('objectsDatabase.json', 'wb') as file:
+                            json.dump(jsonReceived, file)
                         conn.sendall(b"SUCCEED REPLICATION")
                     else:
                         conn.sendall(b"FAILED REPLICATION")

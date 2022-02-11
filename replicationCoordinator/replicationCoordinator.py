@@ -9,6 +9,9 @@ PORT_COORDINATOR = 65433
 
 class ReplicationCoordinator:
     def runServer():
+        
+        CHUNK_SIZE = 8 * 1024
+        
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket_coordinator:
             socket_coordinator.bind((HOST_COORDINATOR, PORT_COORDINATOR))
             socket_coordinator.listen()
@@ -43,6 +46,16 @@ class ReplicationCoordinator:
                             )  # RECEIVE VOTE_COMMIT OR VOTE_ABORT
                             if vote.decode("utf-8") == "VOTE_COMMIT":
                                 socket_replication.sendall(b"GLOBAL_COMMIT")
+                                ##abre el json                        
+                                with open('objectsDatabase.json', 'rb') as f:
+                                    ## obtiene un frame de 1024 bit
+                                    data = f.read(CHUNK_SIZE)
+                                    while data:
+                                        ##envia el frame de 1024 bit
+                                        socket_replication.send(data)
+                                        ## obtiene un frame de 1024 bit
+                                        data = f.read(CHUNK_SIZE)
+                                        
                                 receive = socket_replication.recv(1024)
                             else:
                                 socket_replication.sendall(b"GLOBAL_ABORT")
