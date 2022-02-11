@@ -21,19 +21,27 @@ class Object(Resource):
             objects = objects.to_dict(orient="records")
             return {"objects": objects}, 200
         else:
-            return {"message": f"Object {name} not found"}, 409
+            return {"message": f"Object {name} not found"}, 404
 
     def post(self, name=None):
         objects = getJSONfile()
+        options = ["COMMIT", "ABORT", "RANDOM"]
         print(objects)
         if name in list(objects["name"]):
             return {"message": f"'{name}' already exists."}, 409
         else:
+            parser = reqparse.RequestParser()
+            parser.add_argument("action")
+            args = parser.parse_args()
+            action = str(args["action"]).upper()
+            if action not in options:
+                action = "COMMIT"
+
             new_object = pd.DataFrame(
                 {
                     "creation_date": [datetime.now().strftime("%d/%m/%Y %H:%M:%S")],
                     "name": name,
-                    "action": ["Undefined"],
+                    "action": action,
                 }
             )
             objects = objects.append(new_object, ignore_index=True)
