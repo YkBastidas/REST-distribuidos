@@ -5,11 +5,11 @@ HOST_COORDINATOR = "127.0.0.1"
 PORT_COORDINATOR = 65433
 
 
-class Replicate(Resource):
-    def post(self, action: str):
+class Restore(Resource):
+    def put(self, action: str):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((HOST_COORDINATOR, PORT_COORDINATOR))
-            s.sendall(bytes("REPLICATE", "utf-8"))
+            s.sendall(bytes("RESTORE", "utf-8"))
             data = s.recv(1024)
             s.sendall(bytes(action, "utf-8"))
             data = s.recv(1024)

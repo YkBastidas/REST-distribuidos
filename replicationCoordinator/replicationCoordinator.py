@@ -17,9 +17,12 @@ class ReplicationCoordinator:
             with conn:
                 print("Connected by", addr)
                 while True:
-                    option = conn.recv(1024)
-                    print("Received", repr(option))  # RECEIVE OPTION
-                    if not option:
+                    action_type = conn.recv(1024)
+                    print("Received", repr(action_type))  # RECEIVE REPLICATE/RESTORE
+                    conn.sendall(action_type)
+                    action = conn.recv(1024)
+                    print("Received", repr(action))  # RECEIVE ACTION
+                    if not action:
                         break
 
                     with socket.socket(
@@ -28,7 +31,7 @@ class ReplicationCoordinator:
                         socket_replication.connect(
                             (HOST_REPLICATION_A, PORT_REPLICATION_A)
                         )
-                        socket_replication.sendall(option)
+                        socket_replication.sendall(action)
                         vote = socket_replication.recv(1024)  # RECEIVE VOTE
                         print("Received", repr(vote))
                         socket_replication.sendall(b"VOTE_REQUEST")
