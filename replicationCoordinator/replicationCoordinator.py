@@ -1,7 +1,7 @@
 import os
 import socket
 
-from tqdm import tqdm
+#from tqdm import tqdm
 
 HOST_REPLICATION_A = "172.26.208.232"
 PORT_REPLICATION_A = 65432
@@ -24,6 +24,7 @@ class ReplicationCoordinator:
                 while True:
                     action_type = conn.recv(1024)  # RECEIVE REPLICATE/RESTORE
                     print("Received", repr(action_type))
+                    
                     conn.sendall(action_type)
                     action = conn.recv(1024)  # RECEIVE COMMIT/ABORT
                     print("Received", repr(action))
