@@ -1,6 +1,5 @@
 import os
 from random import choice
-#from tqdm import tqdm
 import socket
 
 HOST = "172.26.110.42"
