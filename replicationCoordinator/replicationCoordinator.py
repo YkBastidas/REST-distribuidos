@@ -43,18 +43,12 @@ class ReplicationCoordinator:
                             )  # RECEIVE VOTE_COMMIT OR VOTE_ABORT
                             if vote.decode("utf-8") == "VOTE_COMMIT":
                                 socket_replication.sendall(b"GLOBAL_COMMIT")
-                                receive = socket_replication.recv(
-                                    1024
-                                )  # RECEIVE SUCEED REPLICATION
-                                print("Received", repr(receive))
+                                receive = socket_replication.recv(1024)
                             else:
                                 socket_replication.sendall(b"GLOBAL_ABORT")
-                                receive = socket_replication.recv(
-                                    1024
-                                )  # RECEIVE REPLICATION FAILURE
-                                print("Received", repr(receive))
-                        # print("Received", repr(vote))
-                        # conn.sendall(vote)
+                                receive = socket_replication.recv(1024)
+                        print("Received", repr(receive))  # RECEIVE REPLICATION OUTCOME
+                        conn.sendall(receive)  # SEND OUTCOME TO APP SERVER
 
     def restoreObjects():
         # TODO: comunicarse via sockets con los servidores de replicacion

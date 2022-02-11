@@ -30,7 +30,7 @@ class ReplicationServer:
                     else:
                         if action == "COMMIT":
                             conn.sendall(b"VOTE_COMMIT")  # SEND VOTE_COMMIT
-                        if action == "ABORT":
+                        elif action == "ABORT":
                             conn.sendall(b"VOTE_ABORT")  # SEND VOTE_ABORT
                         else:
                             choose = choice(["COMMIT", "ABORT"])
