@@ -18,6 +18,7 @@ class ReplicationServer:
                     action = conn.recv(1024)  # RECEIVE ACTION 1
                     print("Received", repr(action))
                     if(action.decode("UTF-8") == "COMMIT"):
+                        print("AQUIIIIIII")
                         conn.sendall(action)  # SEND ACTION 2
                         vote_request = conn.recv(1024)  # RECEIVE VOTE_REQUEST 3
                         print("Received", repr(vote_request))
@@ -62,7 +63,7 @@ class ReplicationServer:
                         relative_path = os.path.join(
                             root,
                             "..",
-                            "replicationServer",
+                            "replicationCoordinator",
                             "replicationDatabase.json",
                         )
                         filename = os.path.realpath(relative_path)
