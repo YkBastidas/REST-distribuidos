@@ -20,7 +20,7 @@ class ReplicationCoordinator:
                     action_type = conn.recv(1024)
                     print("Received", repr(action_type))  # RECEIVE REPLICATE/RESTORE
                     conn.sendall(action_type)
-                    action = conn.recv(1024)
+                    action = conn.recv(1024)           # VOTE_COMMIT OR VOTE_ABORT
                     print("Received", repr(action))  # RECEIVE ACTION
                     if not action:
                         break
@@ -31,13 +31,23 @@ class ReplicationCoordinator:
                         socket_replication.connect(
                             (HOST_REPLICATION_A, PORT_REPLICATION_A)
                         )
-                        socket_replication.sendall(action)
-                        vote = socket_replication.recv(1024)  # RECEIVE VOTE
-                        print("Received", repr(vote))
-                        socket_replication.sendall(b"VOTE_REQUEST")
-                        vote = socket_replication.recv(1024)
-                    print("Received", repr(vote))
-                    conn.sendall(vote)
+                        if action_type == 'REPLICATE':
+
+                            socket_replication.sendall(action)    # SEND ACTION (COMMIT OR ABORT)
+                            vote = socket_replication.recv(1024)  # RECEIVE VOTE
+                            print("Received", repr(vote))
+                            socket_replication.sendall(b"VOTE_REQUEST")
+                            vote = socket_replication.recv(1024)    # RECEIVE VOTE_COMMIT OR VOTE_ABORT
+                            if vote == 'VOTE_COMMIT':
+                                socket_replication.sendall(b"GLOBAL_COMMIT")
+                                receive = socket_replication.recv(1024)  # RECEIVE REPLICATION CREATED
+                                print(receive) 
+                            else:
+                                socket_replication.sendall(b"GLOBAL_ABORT")
+                                receive = socket_replication.recv(1024)  # RECEIVE REPLICATION FAILURE
+                                print(receive)
+                        #print("Received", repr(vote))
+                        #conn.sendall(vote)
 
     def restoreObjects():
         # TODO: comunicarse via sockets con los servidores de replicacion
