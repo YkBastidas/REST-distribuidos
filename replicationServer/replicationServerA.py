@@ -1,6 +1,5 @@
 import os
 from random import choice
-#from tqdm import tqdm
 import socket
 
 HOST = "172.26.110.42"
@@ -18,37 +17,53 @@ class ReplicationServer:
                 while True:
                     action = conn.recv(1024)  # RECEIVE ACTION
                     print("Received", repr(action))
-                    conn.sendall(action)  # SEND ACTION
-                    vote_request = conn.recv(1024)  # RECEIVE VOTE_REQUEST
-                    print("Received", repr(vote_request))
-                    action = action.decode("utf-8")
-                    if not action:
-                        break
-                    else:
-                        if action == "COMMIT":
-                            conn.sendall(b"VOTE_COMMIT")  # SEND VOTE_COMMIT
-                        elif action == "ABORT":
-                            conn.sendall(b"VOTE_ABORT")  # SEND VOTE_ABORT
+                    if(action.decode("UTF-8") == "COMMIT"):
+                        conn.sendall(action)  # SEND ACTION
+                        vote_request = conn.recv(1024)  # RECEIVE VOTE_REQUEST
+                        print("Received", repr(vote_request))
+                        action = action.decode("utf-8")
+                        if not action:
+                            break
                         else:
-                            choose = choice(["COMMIT", "ABORT"])
-                            if choose == "COMMIT":
+                            if action == "COMMIT":
                                 conn.sendall(b"VOTE_COMMIT")  # SEND VOTE_COMMIT
-                            else:
+                            elif action == "ABORT":
                                 conn.sendall(b"VOTE_ABORT")  # SEND VOTE_ABORT
+                            else:
+                                choose = choice(["COMMIT", "ABORT"])
+                                if choose == "COMMIT":
+                                    conn.sendall(b"VOTE_COMMIT")  # SEND VOTE_COMMIT
+                                else:
+                                    conn.sendall(b"VOTE_ABORT")  # SEND VOTE_ABORT
 
-                    last = conn.recv(1024)  # RECEIVE GLOBAL
-                    print("Received", repr(last))
-                    if last.decode("utf-8") == "GLOBAL_COMMIT":
-                        conn.sendall(last)
-                        root = os.path.dirname(__file__)
-                        filename = os.path.join(root, "replicationDatabase.json")
-                        file = open(filename, "wb")
-                        file_data = conn.recv(10240)
-                        file.write(file_data)
-                        file.close()
-                        print("FILE RECEIVED")
-                        conn.sendall(b"SUCCEED REPLICATION")
+                        last = conn.recv(1024)  # RECEIVE GLOBAL
+                        print("Received", repr(last))
+                        if last.decode("utf-8") == "GLOBAL_COMMIT":
+                            conn.sendall(last)
+                            root = os.path.dirname(__file__)
+                            filename = os.path.join(root, "replicationDatabase.json")
+                            file = open(filename, "wb")
+                            file_data = conn.recv(10240)
+                            file.write(file_data)
+                            file.close()
+                            print("FILE RECEIVED")
+                            conn.sendall(b"SUCCEED REPLICATION")
+                        else:
+                            conn.sendall(b"FAILED REPLICATION")
                     else:
-                        conn.sendall(b"FAILED REPLICATION")
+                        root = os.path.dirname(__file__)
+                        relative_path = os.path.join(
+                            root,
+                            "..",
+                            "replicationServer",
+                            "replicationDatabase.json",
+                        )
+                        filename = os.path.realpath(relative_path)
+                        file = open(filename, "rb")
+                        file_data = file.read(10240)
+                        conn.send(file_data)
+                        file.close()
+                        print("Done Sending!")
+                        
 
     runServer()

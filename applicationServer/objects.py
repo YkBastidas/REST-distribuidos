@@ -2,10 +2,6 @@ from flask_restful import Resource
 import pandas as pd
 import json
 import os
-import socket
-
-HOST_COORDINATOR = "127.0.0.1"
-PORT_COORDINATOR = 65433
 
 
 class Objects(Resource):
