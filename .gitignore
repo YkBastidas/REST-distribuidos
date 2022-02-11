@@ -79,6 +79,7 @@ ipython_config.py
 
 # pyenv
 .python-version
+servidorAplicacion
 
 # celery beat schedule file
 celerybeat-schedule
