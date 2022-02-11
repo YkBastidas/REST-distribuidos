@@ -1,7 +1,7 @@
 from flask_restful import Resource
 import socket
 
-HOST_COORDINATOR = "172.26.208.232"
+HOST_COORDINATOR = "1172.26.77.116"
 PORT_COORDINATOR = 65433
 
 

@@ -84,7 +84,7 @@ class ReplicationCoordinator:
                                     socket_replication.sendall(action)
                                     receive = socket_replication.recv(1024)
                                     root = os.path.dirname(__file__)
-                                    filename = os.path.join(root, "replicationDatabase.json")
+                                    filename = os.path.join(root, "aplicationServer" ,"objectsDatabase.json")
                                     file = open(filename, "wb")
                                     file_data = conn.recv(10240)
                                     file.write(file_data)
@@ -136,16 +136,16 @@ class ReplicationCoordinator:
                                 print("Received", repr(receive))  # RECEIVE REPLICATION OUTCOME
                                 conn.sendall(receive)  # SEND OUTCOME TO APP SERVER
                             else:
-                                socket_replication.sendall(
+                                socket_replicationB.sendall(
                                     action
                                 )  # SEND SERVER (A OR B)
-                                action = socket_replication.recv(1024)  # RECEIVE A O B
+                                action = socket_replicationB.recv(1024)  # RECEIVE A O B
                                 print("Received", repr(action))
                                 if action.decode("utf-8") == "B":
-                                    socket_replication.sendall(action)
-                                    receive = socket_replication.recv(1024)
+                                    socket_replicationB.sendall(action)
+                                    receive = socket_replicationB.recv(1024)
                                     root = os.path.dirname(__file__)
-                                    filename = os.path.join(root, "replicationDatabase.json")
+                                    filename = os.path.join(root, "aplicationServer" ,"objectsDatabase.json")
                                     file = open(filename, "wb")
                                     file_data = conn.recv(10240)
                                     file.write(file_data)
@@ -157,4 +157,4 @@ class ReplicationCoordinator:
         # TODO: comunicarse via sockets con los servidores de replicacion
         msg = "RESTORE"
 
-runServer()
+    runServer()
