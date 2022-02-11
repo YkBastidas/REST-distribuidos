@@ -38,12 +38,13 @@ class ReplicationCoordinator:
                             socket_replication.sendall(
                                 action
                             )  # SEND ACTION (COMMIT OR ABORT)
-                            vote = socket_replication.recv(1024)  # RECEIVE COMMIT
-                            print("Received", repr(vote))
+                            action = socket_replication.recv(1024)  # RECEIVE COMMIT
+                            print("Received", repr(action))
                             socket_replication.sendall(b"VOTE_REQUEST")
                             vote = socket_replication.recv(
                                 1024
                             )  # RECEIVE VOTE_COMMIT OR VOTE_ABORT
+                            print("Received", repr(vote))
                             if vote.decode("utf-8") == "VOTE_COMMIT":
                                 socket_replication.sendall(b"GLOBAL_COMMIT")
                                 receive = socket_replication.recv(1024)
@@ -57,15 +58,15 @@ class ReplicationCoordinator:
                                 )
                                 filename = os.path.realpath(relative_path)
                                 file = open(filename, "rb")
-                                file_data = file.read(1024)
-                                for i in tqdm(range(100), desc="Sending..."):
-                                    socket_replication.send(file_data)
-                                    file_data = file.read(1024)
+                                file_data = file.read(10240)
+                                socket_replication.send(file_data)
                                 file.close()
                                 print("Done Sending!")
+                                receive = socket_replication.recv(1024)
                             else:
                                 socket_replication.sendall(b"GLOBAL_ABORT")
-                        receive = socket_replication.recv(1024)
+                                receive = socket_replication.recv(1024)
+                            socket_replication.close()
                         print("Received", repr(receive))  # RECEIVE REPLICATION OUTCOME
                         conn.sendall(receive)  # SEND OUTCOME TO APP SERVER
 

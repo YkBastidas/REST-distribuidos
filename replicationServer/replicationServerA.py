@@ -16,11 +16,6 @@ class ReplicationServer:
             with conn:
                 print("Connected by", addr)
                 while True:
-                    # data = conn.recv(1024)
-                    # print("Received", repr(data))
-                    # if not data:
-                    # break
-                    # conn.sendall(data)
                     action = conn.recv(1024)  # RECEIVE ACTION
                     print("Received", repr(action))
                     conn.sendall(action)  # SEND ACTION
@@ -44,14 +39,12 @@ class ReplicationServer:
                     last = conn.recv(1024)  # RECEIVE GLOBAL
                     print("Received", repr(last))
                     if last.decode("utf-8") == "GLOBAL_COMMIT":
+                        conn.sendall(last)
                         root = os.path.dirname(__file__)
                         filename = os.path.join(root, "replicationDatabase.json")
                         file = open(filename, "wb")
-                        conn.sendall(last)
-                        file_data = conn.recv(1024)
-                        for i in tqdm(range(100), desc="Receiving..."):
-                            file.write(file_data)
-                            file_data = conn.recv(1024)
+                        file_data = conn.recv(10240)
+                        file.write(file_data)
                         file.close()
                         print("FILE RECEIVED")
                         conn.sendall(b"SUCCEED REPLICATION")
