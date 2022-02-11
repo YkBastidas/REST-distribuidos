@@ -25,7 +25,7 @@ class ReplicationServer:
                     if not action:
                         break
                     else:
-                        if action == "COMMIT":
+                        if action == "COMMIT":                            
                             conn.sendall(b"VOTE_COMMIT")  # SEND VOTE_COMMIT
                         elif action == "ABORT":
                             conn.sendall(b"VOTE_ABORT")  # SEND VOTE_ABORT
