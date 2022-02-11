@@ -116,7 +116,6 @@ class ReplicationCoordinator:
                             socket_replicationB.close()
                         print("Received", repr(receive))  # RECEIVE REPLICATION OUTCOME
                         conn.sendall(receive)  # SEND OUTCOME TO APP SERVER
-            
 
     def restoreObjects():
         # TODO: comunicarse via sockets con los servidores de replicacion
