@@ -1,4 +1,7 @@
+import os
 import socket
+
+from tqdm import tqdm
 
 HOST_REPLICATION_A = "127.0.0.1"
 PORT_REPLICATION_A = 65432
@@ -44,9 +47,25 @@ class ReplicationCoordinator:
                             if vote.decode("utf-8") == "VOTE_COMMIT":
                                 socket_replication.sendall(b"GLOBAL_COMMIT")
                                 receive = socket_replication.recv(1024)
+                                print("Received", repr(receive))  # RECEIVE GLOBAL
+                                root = os.path.dirname(__file__)
+                                relative_path = os.path.join(
+                                    root,
+                                    "..",
+                                    "applicationServer",
+                                    "objectsDatabase.json",
+                                )
+                                filename = os.path.realpath(relative_path)
+                                file = open(filename, "rb")
+                                file_data = file.read(1024)
+                                for i in tqdm(range(100), desc="Sending..."):
+                                    socket_replication.send(file_data)
+                                    file_data = file.read(1024)
+                                file.close()
+                                print("Done Sending!")
                             else:
                                 socket_replication.sendall(b"GLOBAL_ABORT")
-                                receive = socket_replication.recv(1024)
+                        receive = socket_replication.recv(1024)
                         print("Received", repr(receive))  # RECEIVE REPLICATION OUTCOME
                         conn.sendall(receive)  # SEND OUTCOME TO APP SERVER
 

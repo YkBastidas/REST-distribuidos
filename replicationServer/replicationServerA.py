@@ -1,4 +1,6 @@
+import os
 from random import choice
+from tqdm import tqdm
 import socket
 
 HOST = "127.0.0.1"
@@ -42,6 +44,16 @@ class ReplicationServer:
                     last = conn.recv(1024)  # RECEIVE GLOBAL
                     print("Received", repr(last))
                     if last.decode("utf-8") == "GLOBAL_COMMIT":
+                        root = os.path.dirname(__file__)
+                        filename = os.path.join(root, "replicationDatabase.json")
+                        file = open(filename, "wb")
+                        conn.sendall(last)
+                        file_data = conn.recv(1024)
+                        for i in tqdm(range(100), desc="Receiving..."):
+                            file.write(file_data)
+                            file_data = conn.recv(1024)
+                        file.close()
+                        print("FILE RECEIVED")
                         conn.sendall(b"SUCCEED REPLICATION")
                     else:
                         conn.sendall(b"FAILED REPLICATION")
