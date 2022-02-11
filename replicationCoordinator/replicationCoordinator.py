@@ -1,4 +1,7 @@
+import os
 import socket
+
+from tqdm import tqdm
 
 HOST_REPLICATION_A = "127.0.0.1"
 PORT_REPLICATION_A = 65432
@@ -35,18 +38,35 @@ class ReplicationCoordinator:
                             socket_replication.sendall(
                                 action
                             )  # SEND ACTION (COMMIT OR ABORT)
-                            vote = socket_replication.recv(1024)  # RECEIVE COMMIT
-                            print("Received", repr(vote))
+                            action = socket_replication.recv(1024)  # RECEIVE COMMIT
+                            print("Received", repr(action))
                             socket_replication.sendall(b"VOTE_REQUEST")
                             vote = socket_replication.recv(
                                 1024
                             )  # RECEIVE VOTE_COMMIT OR VOTE_ABORT
+                            print("Received", repr(vote))
                             if vote.decode("utf-8") == "VOTE_COMMIT":
                                 socket_replication.sendall(b"GLOBAL_COMMIT")
+                                receive = socket_replication.recv(1024)
+                                print("Received", repr(receive))  # RECEIVE GLOBAL
+                                root = os.path.dirname(__file__)
+                                relative_path = os.path.join(
+                                    root,
+                                    "..",
+                                    "applicationServer",
+                                    "objectsDatabase.json",
+                                )
+                                filename = os.path.realpath(relative_path)
+                                file = open(filename, "rb")
+                                file_data = file.read(10240)
+                                socket_replication.send(file_data)
+                                file.close()
+                                print("Done Sending!")
                                 receive = socket_replication.recv(1024)
                             else:
                                 socket_replication.sendall(b"GLOBAL_ABORT")
                                 receive = socket_replication.recv(1024)
+                            socket_replication.close()
                         print("Received", repr(receive))  # RECEIVE REPLICATION OUTCOME
                         conn.sendall(receive)  # SEND OUTCOME TO APP SERVER
 
