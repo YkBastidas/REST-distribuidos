@@ -51,13 +51,16 @@ class ReplicationServer:
                             file.close()
                             print("FILE RECEIVED")
                             conn.sendall(b"SUCCEED REPLICATION")    # SEND SUCCEED 8
+                            break
                         else:
                             t = conn.recv(1024)     # RECEIVE ABORT 9
                             conn.sendall(b"FAILED REPLICATION") # SEND FAILED 10
                             print("Received", repr(t)) 
+                            break
+
                     else:
                         serv = conn.recv(1024)  # RECEIVE A 11
-                        conn.sendall(b"RESTAURAR")  #SEND RESTAURAR 12
+                        conn.sendall(b"RESTORE")  #SEND RESTAURAR 12
                         print("Received", repr(serv))
                         root = os.path.dirname(__file__)
                         relative_path = os.path.join(
