@@ -13,7 +13,7 @@ class Restore(Resource):
             data = s.recv(1024)
             s.sendall(bytes(server, "utf-8"))  # SEND SERVER
             data = s.recv(1024)
-        print("Received", repr(data))
+        print(f"Received from {server}", repr(data))
         data = data.decode("utf-8")
         if data == "FAILED REPLICATION":
             return ({"message": f"'{data}'"}, 501)
