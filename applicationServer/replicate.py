@@ -1,7 +1,7 @@
 from flask_restful import Resource
 import socket
 
-HOST_COORDINATOR = "172.26.77.116"
+HOST_COORDINATOR = "172.26.208.232"
 PORT_COORDINATOR = 65433
 
 
@@ -12,8 +12,10 @@ class Replicate(Resource):
             s.sendall(bytes("REPLICATE", "utf-8"))  # SEND REPLICATE
             data = s.recv(1024)
             s.sendall(bytes(action, "utf-8"))  # SEND ACTION
-            data = s.recv(1024)
-        print("Received", repr(data))
+            dataA = s.recv(1024)
+            print("Received from A", repr(data))
+            s.recv(1024)
+            print("Received from B", repr(data))
         data = data.decode("utf-8")
         if data == "FAILED REPLICATION":
             return ({"message": f"'{data}'"}, 501)
