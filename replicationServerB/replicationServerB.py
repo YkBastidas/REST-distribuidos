@@ -2,11 +2,11 @@ import os
 from random import choice
 import socket
 
-HOST = "172.26.110.42"
+HOST = "172.26.208.232"
 PORT = 65435
 
 
-class ReplicationServerB:
+class ReplicationServer:
     def runServer():
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((HOST, PORT))
@@ -17,7 +17,7 @@ class ReplicationServerB:
                 while True:
                     action = conn.recv(1024)  # RECEIVE ACTION 1
                     print("Received", repr(action))
-                    if(action.decode("UTF-8") == "COMMIT"):
+                    if action.decode("UTF-8") == "COMMIT":
                         conn.sendall(action)  # SEND ACTION 2
                         vote_request = conn.recv(1024)  # RECEIVE VOTE_REQUEST 3
                         print("Received", repr(vote_request))
@@ -44,30 +44,33 @@ class ReplicationServerB:
                             root = os.path.dirname(__file__)
                             filename = os.path.join(root, "replicationDatabase.json")
                             file = open(filename, "wb")
-                            file_data = conn.recv(10240) # RECIBE LA DATA 7
+                            file_data = conn.recv(10240)  # RECIBE LA DATA 7
                             # LLENA EL ARCHIVO
                             file.write(file_data)
                             file.close()
                             print("FILE RECEIVED")
-                            conn.sendall(b"SUCCEED REPLICATION")    # SEND SUCCEED 8
+                            conn.sendall(b"SUCCEED REPLICATION")  # SEND SUCCEED 8
                             break
                         else:
-                            t = conn.recv(1024)     # RECEIVE ABORT 9
-                            conn.sendall(b"FAILED REPLICATION") # SEND FAILED 10
-                            print("Received", repr(t)) 
+                            t = conn.recv(1024)  # RECEIVE ABORT 9
+                            conn.sendall(b"FAILED REPLICATION")  # SEND FAILED 10
+                            print("Received", repr(t))
                             break
 
                     else:
-                        conn.sendall(b"RESTORE")  #SEND RESTAURAR 12
+                        # serv = conn.recv(1024)  # RECEIVE A 11
+                        conn.sendall(b"RESTORE")  # SEND RESTAURAR 12
                         root = os.path.dirname(__file__)
                         filename = os.path.join(root, "replicationDatabase.json")
                         file = open(filename, "rb")
                         file_data = file.read(10240)
-                        conn.send(file_data) # SEND DATA 13
+                        conn.send(file_data)  # SEND DATA 13
                         p = conn.recv(1024)  # RECEIVE 14
                         print("Received", repr(p))
                         file.close()
                         print("Done Sending!")
-                        conn.sendall(b"SUCCEED RESTORATION") 
+                        conn.sendall(b"SUCCEED REPLICATION")
                         conn.close()
                         break
+
+    runServer()
