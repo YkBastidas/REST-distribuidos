@@ -2,7 +2,7 @@ import os
 from random import choice
 import socket
 
-HOST = "172.26.110.42"
+HOST = "127.0.0.1"
 PORT = 65432
 
 
@@ -63,22 +63,27 @@ class ReplicationServer:
                         conn.sendall(b"RESTORE")  #SEND RESTAURAR 12
                         #print("Received", repr(serv))
                         root = os.path.dirname(__file__)
-                        p = conn.recv(1024)  # RECEIVE
-                        print(p)
+                        #p = conn.recv(1024)  # RECEIVE
+                        #print(p)
                         print('ACAAAAAAAAA')
-                        relative_path = os.path.join(
-                            root,
-                            "..",
-                            "replicationServer",
-                            "replicationDatabase.json",
-                        )
-                        filename = os.path.realpath(relative_path)
+                        #relative_path = os.path.join(
+                            #root,
+                            #"..",
+                            #"replicationServer",
+                            #"replicationDatabase.json",
+                        #)
+                        filename = os.path.join(root, "replicationDatabase.json")
+                        #filename = os.path.realpath(relative_path)
                         file = open(filename, "rb")
                         file_data = file.read(10240)
                         conn.send(file_data) # SEND DATA 13
                         p = conn.recv(1024)  # RECEIVE 14
+                        print("Received", repr(p))
                         file.close()
                         print("Done Sending!")
+                        conn.sendall(b"SUCCEED REPLICATION") 
+                        conn.close()
+                        break
                         
 
     runServer()

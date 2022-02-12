@@ -3,13 +3,13 @@ import socket
 
 # from tqdm import tqdm
 
-HOST_REPLICATION_A = "172.26.110.42"
+HOST_REPLICATION_A = "127.0.0.1"
 PORT_REPLICATION_A = 65432
 
 HOST_REPLICATION_B = "172.26.77.116"
 PORT_REPLICATION_B = 65432
 
-HOST_COORDINATOR = "172.26.208.232"
+HOST_COORDINATOR = "127.0.0.1"
 PORT_COORDINATOR = 65433
 
 
@@ -170,14 +170,18 @@ class ReplicationCoordinator:
                                 root = os.path.dirname(__file__)
                                 filename = os.path.join(
                                     root,
-                                    "applicationServer",
                                     "objectsDatabaseRestore.json",
                                 )
                                 file = open(filename, "wb")
-                                file_data = conn.recv(10240)  # RECEIVE DATA 13
+                                file_data = socket_replication.recv(10240)  # RECEIVE DATA 13
                                 file.write(file_data)
                                 file.close()
+                                socket_replication.sendall(b'SUCCEED')   #  SEND 14
+                                rec = socket_replication.recv(1024)
+                                print("Received", repr(rec))
+                                socket_replication.close()
                                 print("FILE RECEIVED")
+                                break
 
                         # with socket.socket(
                         #     socket.AF_INET, socket.SOCK_STREAM
