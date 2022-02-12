@@ -59,20 +59,24 @@ class ReplicationServer:
                             break
 
                     else:
-                        serv = conn.recv(1024)  # RECEIVE A 11
+                        #serv = conn.recv(1024)  # RECEIVE A 11
                         conn.sendall(b"RESTORE")  #SEND RESTAURAR 12
-                        print("Received", repr(serv))
+                        #print("Received", repr(serv))
                         root = os.path.dirname(__file__)
+                        p = conn.recv(1024)  # RECEIVE
+                        print(p)
+                        print('ACAAAAAAAAA')
                         relative_path = os.path.join(
                             root,
                             "..",
-                            "replicationCoordinator",
+                            "replicationServer",
                             "replicationDatabase.json",
                         )
                         filename = os.path.realpath(relative_path)
                         file = open(filename, "rb")
                         file_data = file.read(10240)
                         conn.send(file_data) # SEND DATA 13
+                        p = conn.recv(1024)  # RECEIVE 14
                         file.close()
                         print("Done Sending!")
                         
