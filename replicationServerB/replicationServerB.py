@@ -2,7 +2,7 @@ import os
 from random import choice
 import socket
 
-HOST = "172.26.208.232"
+HOST = "172.26.110.42"
 PORT = 65435
 
 

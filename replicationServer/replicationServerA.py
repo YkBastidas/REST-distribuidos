@@ -2,7 +2,7 @@ import os
 from random import choice
 import socket
 
-HOST = "127.0.0.1"
+HOST = "172.26.110.42"
 PORT = 65432
 
 
@@ -18,7 +18,6 @@ class ReplicationServer:
                     action = conn.recv(1024)  # RECEIVE ACTION 1
                     print("Received", repr(action))
                     if(action.decode("UTF-8") == "COMMIT"):
-                        print("AQUIIIIIII")
                         conn.sendall(action)  # SEND ACTION 2
                         vote_request = conn.recv(1024)  # RECEIVE VOTE_REQUEST 3
                         print("Received", repr(vote_request))
@@ -59,21 +58,9 @@ class ReplicationServer:
                             break
 
                     else:
-                        #serv = conn.recv(1024)  # RECEIVE A 11
                         conn.sendall(b"RESTORE")  #SEND RESTAURAR 12
-                        #print("Received", repr(serv))
                         root = os.path.dirname(__file__)
-                        #p = conn.recv(1024)  # RECEIVE
-                        #print(p)
-                        print('ACAAAAAAAAA')
-                        #relative_path = os.path.join(
-                            #root,
-                            #"..",
-                            #"replicationServer",
-                            #"replicationDatabase.json",
-                        #)
                         filename = os.path.join(root, "replicationDatabase.json")
-                        #filename = os.path.realpath(relative_path)
                         file = open(filename, "rb")
                         file_data = file.read(10240)
                         conn.send(file_data) # SEND DATA 13
